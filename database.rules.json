@@ -1,0 +1,37 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "messages": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null && !data.exists() && newData.exists() && (!root.child('lastSent').child(auth.uid).exists() || now > root.child('lastSent').child(auth.uid).val() + 800)",
+        ".validate": "newData.hasChildren(['uid','name','text','ts']) && newData.child('uid').val() === auth.uid && newData.child('name').isString() && newData.child('name').val().length >= 2 && newData.child('name').val().length <= 20 && newData.child('text').isString() && newData.child('text').val().length >= 1 && newData.child('text').val().length <= 500 && newData.child('ts').val() === now",
+        "uid":  { ".validate": "true" },
+        "name": { ".validate": "true" },
+        "text": { ".validate": "true" },
+        "ts":   { ".validate": "true" },
+        "$other": { ".validate": "false" }
+      }
+    },
+
+    "lastSent": {
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.val() === now"
+      }
+    },
+
+    "presence": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.hasChildren(['name','ts'])",
+        "name": { ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 20" },
+        "ts":   { ".validate": "newData.isNumber()" },
+        "$other": { ".validate": "false" }
+      }
+    }
+  }
+}
